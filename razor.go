@@ -5,6 +5,9 @@ import (
 	"time"
 )
 
+const TCP_FASTOPEN int = 23
+const LISTEN_BACKLOG int = 23
+
 // RazorListener accept tcp connections from binding socket
 // implements net.Listener
 type RazorListener interface {
