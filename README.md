@@ -1,8 +1,8 @@
-# razor
-Razor a cross platform ,fast open supported,  tcp connection util in go
+# Razor
+a cross platform ,fast open supported,  tcp connection utility in go
 
 ## Feature
-* Cross platform. Linux & MacOS (Windows ___planded___)
+* Cross platform. Linux & MacOS (Windows ___TODO___)
 * Easy to use. Implement net.Conn
 * Support the TCP Fast Open
 
