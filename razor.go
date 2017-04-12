@@ -12,7 +12,7 @@ const LISTEN_BACKLOG int = 23
 // implements net.Listener
 type RazorListener interface {
 	// Accept waits for and returns the next Razor connection to the listener.
-	Accept() (Razor, error)
+	Accept() (net.Conn, error)
 
 	// Close closes the listener.
 	Close() error

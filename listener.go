@@ -2,7 +2,6 @@ package razor
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"syscall"
 )
@@ -27,21 +26,48 @@ type razorListener struct {
 	isInit     bool
 }
 
+func Listen(addr string, port int) (RazorListener, error) {
+	r := &razorListener{}
+	sa := &syscall.SockaddrInet4{Addr: r.ServerAddr, Port: r.ServerPort}
+
+	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
+	if err != nil {
+		return nil, err
+		//if err == syscall.ENOPROTOOPT {
+		//	fmt.Println("TCP Fast Open server support is unavailable (unsupported kernel)")
+		//}
+	}
+	r.fd = fd
+
+	err = syscall.SetsockoptInt(r.fd, syscall.SOL_TCP, TCP_FASTOPEN, 1)
+	if err != nil {
+		return nil, err
+	}
+
+	err = syscall.Bind(r.fd, sa)
+	if err != nil {
+		return nil, err
+	}
+
+	err = syscall.Listen(r.fd, LISTEN_BACKLOG)
+	if err != nil {
+		return nil, err
+	}
+	r.isInit = false
+
+	return r, nil
+}
+
 func (r *razorListener) Accept() (net.Conn, error) {
 	if r.isInit {
 		sa := &syscall.SockaddrInet4{Addr: r.ServerAddr, Port: r.ServerPort}
 
-		fmt.Println("init the socket")
 		fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
 		if err != nil {
 			return nil, err
-			//if err == syscall.ENOPROTOOPT {
-			//	fmt.Println("TCP Fast Open server support is unavailable (unsupported kernel)")
-			//}
 		}
 		r.fd = fd
 
-		fmt.Println("init the set the socket")
 		err = syscall.SetsockoptInt(r.fd, syscall.SOL_TCP, TCP_FASTOPEN, 1)
 		if err != nil {
 			return nil, err
@@ -52,7 +78,6 @@ func (r *razorListener) Accept() (net.Conn, error) {
 			return nil, err
 		}
 
-		fmt.Println("listen the socket")
 		err = syscall.Listen(r.fd, LISTEN_BACKLOG)
 		if err != nil {
 			return nil, err
@@ -61,7 +86,6 @@ func (r *razorListener) Accept() (net.Conn, error) {
 	}
 
 	rc := &razor{}
-	fmt.Println("accept the conn")
 
 	cfd, sockaddr, err := syscall.Accept(r.fd)
 	if err != nil {
@@ -91,5 +115,8 @@ func (r *razorListener) Close() error {
 }
 
 func (r *razorListener) Addr() net.Addr {
-	return nil
+	return &net.TCPAddr{
+		IP:   r.ServerAddr[:],
+		Port: r.ServerPort,
+	}
 }

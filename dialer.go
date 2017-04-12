@@ -1,19 +1,17 @@
 package razor
 
 import (
-	"context"
 	"net"
 	"syscall"
 	"time"
 )
 
 type razor struct {
-	ServerAddr      [4]byte
-	ServerPort      int
-	RAddr           [4]byte
-	RPort           int
-	fd              int
-	ctx, rctx, wctx context.Context
+	ServerAddr [4]byte
+	ServerPort int
+	RAddr      [4]byte
+	RPort      int
+	fd         int
 }
 
 func (r *razor) Read(b []byte) (n int, err error) {
@@ -42,8 +40,18 @@ func (r *razor) Close() error {
 	return nil
 }
 
-func (r *razor) LocalAddr() net.Addr
-func (r *razor) RemoteAddr() net.Addr
-func (r *razor) SetDeadline(t time.Time) error
-func (r *razor) SetReadDeadline(t time.Time) error
-func (r *razor) SetWriteDeadline(t time.Time) error
+func (r *razor) LocalAddr() net.Addr {
+	return &net.TCPAddr{
+		IP:   r.ServerAddr[:],
+		Port: r.ServerPort,
+	}
+}
+func (r *razor) RemoteAddr() net.Addr {
+	return &net.TCPAddr{
+		IP:   r.RAddr[:],
+		Port: r.RPort,
+	}
+}
+func (r *razor) SetDeadline(t time.Time) error      { return nil }
+func (r *razor) SetReadDeadline(t time.Time) error  { return nil }
+func (r *razor) SetWriteDeadline(t time.Time) error { return nil }
