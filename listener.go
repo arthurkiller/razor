@@ -2,21 +2,12 @@ package razor
 
 import (
 	"context"
+	"errors"
 	"net"
+	"strconv"
+	"strings"
 	"syscall"
 )
-
-//type Listener interface {
-//	// Accept waits for and returns the next connection to the listener.
-//	Accept() (Conn, error)
-//
-//	// Close closes the listener.
-//	// Any blocked Accept operations will be unblocked and return errors.
-//	Close() error
-//
-//	// Addr returns the listener's network address.
-//	Addr() Addr
-//}
 
 type razorListener struct {
 	ServerAddr [4]byte
@@ -26,8 +17,21 @@ type razorListener struct {
 	isInit     bool
 }
 
-func Listen(addr string, port int) (RazorListener, error) {
+func Listen(host string) (RazorListener, error) {
 	r := &razorListener{}
+
+	ss := strings.Split(host, ":")
+	addr := net.ParseIP(ss[0]).To4()
+	if addr == nil {
+		return nil, errors.New("error in parse host")
+	}
+	copy(r.ServerAddr[:], addr)
+	port, err := strconv.Atoi(ss[1])
+	if err != nil {
+		return nil, err
+	}
+	r.ServerPort = port
+
 	sa := &syscall.SockaddrInet4{Addr: r.ServerAddr, Port: r.ServerPort}
 
 	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
@@ -92,8 +96,8 @@ func (r *razorListener) Accept() (net.Conn, error) {
 		return nil, err
 	}
 	rc.fd = cfd
-	rc.ServerAddr = r.ServerAddr
-	rc.ServerPort = r.ServerPort
+	rc.Addr = r.ServerAddr
+	rc.Port = r.ServerPort
 
 	if raddr, ok := sockaddr.(*syscall.SockaddrInet4); ok {
 		rc.RAddr = raddr.Addr
