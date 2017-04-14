@@ -1,7 +1,6 @@
 package razor
 
 import (
-	"errors"
 	"net"
 	"strconv"
 	"strings"
@@ -23,7 +22,7 @@ func Dial(host string) (Razor, error) {
 	ss := strings.Split(host, ":")
 	addr := net.ParseIP(ss[0]).To4()
 	if addr == nil {
-		return nil, errors.New("error in parse host")
+		return nil, ErrParseHost
 	}
 
 	copy(rc.Addr[:], addr)

@@ -2,13 +2,13 @@ package razor
 
 import (
 	"context"
-	"errors"
 	"net"
 	"strconv"
 	"strings"
 	"syscall"
 )
 
+// razorListener implement the RazorListener can also be used as the net.Listener
 type razorListener struct {
 	ServerAddr [4]byte
 	ServerPort int
@@ -23,7 +23,7 @@ func Listen(host string) (RazorListener, error) {
 	ss := strings.Split(host, ":")
 	addr := net.ParseIP(ss[0]).To4()
 	if addr == nil {
-		return nil, errors.New("error in parse host")
+		return nil, ErrParseHost
 	}
 	copy(r.ServerAddr[:], addr)
 	port, err := strconv.Atoi(ss[1])
@@ -36,10 +36,10 @@ func Listen(host string) (RazorListener, error) {
 
 	fd, err := syscall.Socket(syscall.AF_INET, syscall.SOCK_STREAM, 0)
 	if err != nil {
+		if err == syscall.ENOPROTOOPT {
+			return nil, ErrTFONotSupport
+		}
 		return nil, err
-		//if err == syscall.ENOPROTOOPT {
-		//	fmt.Println("TCP Fast Open server support is unavailable (unsupported kernel)")
-		//}
 	}
 	r.fd = fd
 

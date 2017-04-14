@@ -1,12 +1,21 @@
 package razor
 
 import (
+	"errors"
 	"net"
 	"time"
 )
 
-const TCP_FASTOPEN int = 23
-const LISTEN_BACKLOG int = 23
+// Define tcp fast open options
+const (
+	TCP_FASTOPEN   int = 23
+	LISTEN_BACKLOG int = 23
+)
+
+var (
+	ErrTFONotSupport = errors.New("TCP Fast Open server support is unavailable (unsupported kernel)")
+	ErrParseHost     = errors.New("Error parse host")
+)
 
 // RazorListener accept tcp connections from binding socket
 // implements net.Listener
