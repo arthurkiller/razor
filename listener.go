@@ -17,7 +17,8 @@ type razorListener struct {
 	isInit     bool
 }
 
-func Listen(host string) (RazorListener, error) {
+// Listen will listen given host and give back a Listener which implement the net.Listener
+func Listen(host string) (Listener, error) {
 	r := &razorListener{}
 
 	ss := strings.Split(host, ":")
@@ -43,7 +44,7 @@ func Listen(host string) (RazorListener, error) {
 	}
 	r.fd = fd
 
-	err = syscall.SetsockoptInt(r.fd, syscall.SOL_TCP, TCP_FASTOPEN, 1)
+	err = syscall.SetsockoptInt(r.fd, syscall.SOL_TCP, TCPFastOpen, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +54,7 @@ func Listen(host string) (RazorListener, error) {
 		return nil, err
 	}
 
-	err = syscall.Listen(r.fd, LISTEN_BACKLOG)
+	err = syscall.Listen(r.fd, ListenBacklog)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +73,7 @@ func (r *razorListener) Accept() (net.Conn, error) {
 		}
 		r.fd = fd
 
-		err = syscall.SetsockoptInt(r.fd, syscall.SOL_TCP, TCP_FASTOPEN, 1)
+		err = syscall.SetsockoptInt(r.fd, syscall.SOL_TCP, TCPFastOpen, 1)
 		if err != nil {
 			return nil, err
 		}
@@ -82,7 +83,7 @@ func (r *razorListener) Accept() (net.Conn, error) {
 			return nil, err
 		}
 
-		err = syscall.Listen(r.fd, LISTEN_BACKLOG)
+		err = syscall.Listen(r.fd, ListenBacklog)
 		if err != nil {
 			return nil, err
 		}

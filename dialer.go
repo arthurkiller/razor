@@ -16,7 +16,8 @@ type razor struct {
 	fd    int
 }
 
-func Dial(host string) (Razor, error) {
+// Dial generate a Razor boject which implements net.Conn
+func Dial(host string) (Conn, error) {
 	rc := &razor{}
 
 	ss := strings.Split(host, ":")

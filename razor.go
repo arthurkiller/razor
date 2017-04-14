@@ -8,18 +8,19 @@ import (
 
 // Define tcp fast open options
 const (
-	TCP_FASTOPEN   int = 23
-	LISTEN_BACKLOG int = 23
+	TCPFastOpen   int = 23
+	ListenBacklog int = 23
 )
 
 var (
+	// ErrTFONotSupport give out an error your OS kernel is not support the tfo
 	ErrTFONotSupport = errors.New("TCP Fast Open server support is unavailable (unsupported kernel)")
-	ErrParseHost     = errors.New("Error parse host")
+	// ErrParseHost mean can not parse given host into ip:port
+	ErrParseHost = errors.New("Error parse host")
 )
 
-// RazorListener accept tcp connections from binding socket
-// implements net.Listener
-type RazorListener interface {
+// Listener accept tcp connections from binding socket implements net.Listener
+type Listener interface {
 	// Accept waits for and returns the next Razor connection to the listener.
 	Accept() (net.Conn, error)
 
@@ -30,8 +31,8 @@ type RazorListener interface {
 	Addr() net.Addr
 }
 
-// Razor is a tcp fast open supported Conn which implement net.Conn
-type Razor interface {
+// Conn is a tcp fast open supported Conn which implement net.Conn
+type Conn interface {
 	// Read reads data from the connection.
 	// Read can be made to time out and return an Error with Timeout() == true
 	// after a fixed time limit; see SetDeadline and SetReadDeadline.
