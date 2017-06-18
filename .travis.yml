@@ -6,8 +6,5 @@ go:
   - 1.6
   - 1.7.6
   - 1.8.3
-env:
-  global:
-    - GO15VENDOREXPERIMENT=1
 script:
   - PATH=$PATH:$HOME/gopath/bin bash -x ./demo/test.sh
