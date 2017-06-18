@@ -1,4 +1,4 @@
-# Razor
+# Razor [![Go Report Card](https://goreportcard.com/badge/github.com/arthurkiller/razor)](https://goreportcard.com/report/github.com/arthurkiller/razor)[![Build Status](https://travis-ci.org/arthurkiller/razor.svg?branch=master)](https://travis-ci.org/arthurkiller/razor)
 tcp-fast-open supported tcp connection utility in go
 
 make sure your server suppport tcp-fast-open and enabled
