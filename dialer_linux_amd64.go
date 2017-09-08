@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+// Define tcp fast open options
+const (
+	TCPFastOpen   int = 23
+	ListenBacklog int = 23
+)
+
 type razor struct {
 	Addr  [4]byte
 	Port  int

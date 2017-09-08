@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-// Define tcp fast open options
-const (
-	TCPFastOpen   int = 23
-	ListenBacklog int = 23
-)
-
 var (
 	// ErrTFONotSupport give out an error your OS kernel is not support the tfo
 	ErrTFONotSupport = errors.New("TCP Fast Open server support is unavailable (unsupported kernel)")
